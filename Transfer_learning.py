@@ -5,6 +5,13 @@ from test import *
 
 from new_train import train
 
+#####################################################
+# Training: python Transfer_learning.py -bs 5 -m ./ckpt-enet-100-35.71956396102905.pth --cuda True 
+#####################################################
+# Fordpass: python init.py --cuda False -bs 5 --mode test -m ./ckpt-enet-100-35.71956396102905.pth -i ./datasets/CamVid/test/0001TP_008550.png
+#####################################################
+
+
 color_map = {
     'unlabeled'     : (  0,  0,  0),
     'dynamic'       : (111, 74,  0),
@@ -42,7 +49,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-m',
                         type=str,
-                        default='./datasets/CamVid/ckpt-camvid-enet.pth',
+                        default='./datasets/CamVid/ckpt-enet.pth',
                         help='The path to the pretrained enet model')
 
     parser.add_argument('-i', '--image-path',
@@ -86,8 +93,8 @@ if __name__ == '__main__':
 
     parser.add_argument('-nc', '--num-classes',
                         type=int,
-                        default=102,
-                        help='The number of epochs')
+                        default=12,
+                        help='The number of classses')
 
     parser.add_argument('-se', '--save-every',
                         type=int,

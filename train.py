@@ -5,6 +5,12 @@ from models.ENet import ENet
 import sys
 from tqdm import tqdm
 
+
+####################################
+# python init.py --cuda True -bs 5 #
+####################################
+
+
 def train(FLAGS):
 
     # Defining the hyperparameters

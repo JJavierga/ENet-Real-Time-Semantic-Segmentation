@@ -7,6 +7,12 @@ import os
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
+
+#########
+# python init.py --cuda False -bs 5 --mode test -m ./ckpt-enet-100-35.71956396102905.pth -i ./datasets/CamVid/test/0001TP_008550.png
+#########
+
+
 def test(FLAGS):
     # Check if the pretrained model is available
     if not FLAGS.m.endswith('.pth'):
@@ -27,6 +33,14 @@ def test(FLAGS):
     tmg_ = cv2.resize(tmg_, (h, w), cv2.INTER_NEAREST)
     tmg = torch.tensor(tmg_).unsqueeze(0).float()
     tmg = tmg.transpose(2, 3).transpose(1, 2)
+
+    ###### MINE ######
+
+    device=FLAGS.cuda
+    tmg=tmg.to(device)
+    enet=enet.to(device)
+
+    ###### END MINE #####
 
     with torch.no_grad():
         out1 = enet(tmg.float()).squeeze(0)

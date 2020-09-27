@@ -11,6 +11,7 @@ def train(FLAGS,frozen_layers=27):
 
     # Defining the hyperparameters
     device =  FLAGS.cuda
+    m = FLAGS.m
     batch_size = FLAGS.batch_size
     epochs = FLAGS.epochs
     lr = FLAGS.learning_rate
@@ -37,22 +38,20 @@ def train(FLAGS,frozen_layers=27):
     enet = ENet(nc)
     print ('[INFO]Model Instantiated!')
 
-    # Move the model to cuda if available
-    enet = enet.to(device)
-
+    
     # Transfer learnt weights
-    pretrained_dict = torch.load('./datasets/CamVid/ckpt-enet.pth')['state_dict']
+    pretrained_dict = torch.load(FLAGS.m,  map_location=FLAGS.cuda)['state_dict']
     model_dict = enet.state_dict()
 
     # 1. filter out unnecessary keys
-    #pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+    pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
     # 2. overwrite entries in the existing state dict
-    #model_dict.update(pretrained_dict) 
+    model_dict.update(pretrained_dict) 
     # 3. load the new state dict
-    #enet.load_state_dict(model_dict)
+    enet.load_state_dict(model_dict)
+    #enet.load_state_dict(pretrained_dict)
+
     
-
-
     # Choose frozen layers
     count=0
     for child in enet.children():
@@ -63,6 +62,9 @@ def train(FLAGS,frozen_layers=27):
         else:
             for param in child.parameters():
                 print(param)
+
+    # Move the model to cuda if available
+    enet = enet.to(device)
 
     # Define the criterion and the optimizer
     criterion = nn.CrossEntropyLoss()
@@ -143,7 +145,7 @@ def train(FLAGS,frozen_layers=27):
                 'epochs' : e,
                 'state_dict' : enet.state_dict()
             }
-            torch.save(checkpoint, './ckpt-new-enet-{}-{}.pth'.format(e, train_loss))
+            torch.save(checkpoint, './ckpt-new-transfer-enet-{}.pth'.format(e))
             print ('Model saved!')
 
         print ('Epoch {}/{}...'.format(e+1, epochs),
